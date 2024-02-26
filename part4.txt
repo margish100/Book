@@ -1,0 +1,50 @@
+﻿Question 1:
+FastAPI is built on top of Starlette and Pydantic, which allows it to handle asynchronous requests efficiently. Asynchronous requests are managed through Python's async and await syntax, enabling non-blocking I/O operations. This approach is particularly beneficial for I/O-bound and high-latency tasks, such as accessing databases, sending HTTP requests, or reading and writing files.
+Benefits Over Synchronous Code:
+    1. Improved Performance: Asynchronous code can handle more requests by not waiting for the current task to complete before moving on to the next one. This non-blocking behavior leads to improved performance, especially for I/O-bound operations.
+    2. Better Resource Utilization: By leveraging concurrency, asynchronous applications can make better use of system resources, as threads are not idly waiting for I/O operations to complete.
+    3. Scalability: Asynchronous applications can scale more efficiently to handle large numbers of simultaneous connections, which is particularly beneficial for APIs expected to serve many clients at once.
+
+
+
+Question 2: Dependency Injection in FastAPI
+Dependency Injection (DI) in FastAPI is a design pattern that allows for the decoupling of components and their dependencies. This pattern facilitates easier testing, maintenance, and extension of applications. In FastAPI, 
+dependencies can be functions or classes that are automatically instantiated and inserted by the framework into your path operation functions, based on the type annotations.
+
+
+
+
+Question 3: Code Walkthrough
+For a code walkthrough, it's important to have a specific piece of code or a concept in mind. Since the context for a walkthrough wasn't provided, I'll give a brief overview of creating a simple FastAPI application, touching on both asynchronous requests and dependency injection:
+pythonCopy code
+from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel
+from typing import List
+from sqlalchemy.orm import Session
+from . import crud, models, schemas
+from .database import SessionLocal, engine
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/users/", response_model=schemas.User)
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_user(db=db, user=user)
+
+@app.get("/users/", response_model=List[schemas.User])
+async def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = crud.get_users(db, skip=skip, limit=limit)
+    return users
+

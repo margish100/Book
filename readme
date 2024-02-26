@@ -1,0 +1,92 @@
+create venv environment
+
+pip install fastapi uvicorn
+pip install sqlalchemy
+
+uvicorn main:app --reload --port 9001
+
+Book  post data
+http://127.0.0.1:9001/books/
+
+
+curl -X 'POST' \
+  'http://127.0.0.1:9001/books/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "Python Book",
+  "author": "Margish",
+  "publication_year": 2024
+}'
+
+response
+
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "Python Book",
+  "author": "Margish",
+  "publication_year": 2024
+}
+
+get the data:
+
+curl -X 'GET' \
+  'http://127.0.0.1:9001/books/?author=Margish&publication_year=2024' \
+  -H 'accept: application/json'
+
+http://127.0.0.1:9001/books/?author=Margish&publication_year=2024
+
+reponse body
+
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "Python Book",
+    "author": "Margish",
+    "publication_year": 2024
+  }
+]
+
+review:
+
+http://127.0.0.1:9001/reviews/
+
+curl -X 'POST' \
+  'http://127.0.0.1:9001/reviews/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "book_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "text": "testing",
+  "rating": 3
+}'
+
+reponse body
+
+{
+  "book_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "text": "testing",
+  "rating": 3
+}
+
+review 
+
+curl -X 'GET' \
+  'http://127.0.0.1:9001/reviews/3fa85f64-5717-4562-b3fc-2c963f66afa6' \
+  -H 'accept: application/json'
+
+request url
+
+http://127.0.0.1:9001/reviews/3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+
+reponse body
+
+[
+  {
+    "book_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "text": "testing",
+    "rating": 3
+  }
+]
